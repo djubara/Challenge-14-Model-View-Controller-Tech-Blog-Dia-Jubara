@@ -10,7 +10,7 @@ const hbs = exphbs.create({});
 
 const handlebars = require('handlebars');
 
-handlebars.registerHelper('eq', function(arg1, arg2, options) {
+handlebars.registerHelper('eq', function (arg1, arg2, options) {
     if (arg1 === arg2) {
         return options.fn ? options.fn(this) : '';
     } else {
@@ -19,9 +19,6 @@ handlebars.registerHelper('eq', function(arg1, arg2, options) {
 });
 
 const app = express();
-
-
-
 
 
 const sess = {
@@ -53,7 +50,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(routes);
 
 
-
 sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () => console.log('Now listening'));
-    });
+});
