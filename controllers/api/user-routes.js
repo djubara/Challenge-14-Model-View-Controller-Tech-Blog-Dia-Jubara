@@ -1,10 +1,11 @@
+// Require the necessary libraries
+
 const router = require('express').Router();
 
-const { User, BlogPost } = require('../../models');
+const { User, BlogPost, Comment } = require('../../models');
 
+// Create a new user
 
-
-// CREATE new user
 router.post('/signup', async (req, res) => {
     try {
         const userData = await User.create({
@@ -23,7 +24,8 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-//Login
+// Login route
+
 router.post('/login', async (req, res) => {
     try {
         const userData = await User.findOne({
@@ -59,21 +61,38 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Logout route
 
-// Authenticate user and render dashboard
-// This route is protected and will only render the dashboard if the user is authenticated
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
     if (req.session.loggedIn) {
-        // Retrieve the current user's ID from the session
         const userId = req.session.userId;
 
         if (userId) {
-            // Find all blog posts by the current user
-            BlogPost.findAll({ where: { user_id: userId } })
+            BlogPost.findAll({
+                where: { user_id: userId },
+                include: [
+                    {
+                        model: User,
+                        attributes: ['username'],
+                    },
+                    {
+                        model: Comment,
+                        attributes: ['content', 'user_id', 'blogPost_id', 'createdAt'],
+                        include: {
+                            model: User,
+                            attributes: ['username'],
+                        },
+                    },
+                ],
+            })
                 .then(blogPostData => {
-                    // Serialize data
-                    const blogPosts = blogPostData.map(blogPost => blogPost.get({ plain: true }));
-                    // Pass serialized data and session flag into the template
+                    const blogPosts = blogPostData.map(blogPost => {
+                        const serializedBlogPost = blogPost.get({ plain: true });
+                        serializedBlogPost.comment = blogPost.Comment?.map(comment => comment.get({ plain: true })) || [];
+                        return serializedBlogPost;
+                    });
+
+
                     res.render('dashboard', { blogPosts, loggedIn: req.session.loggedIn });
                 })
                 .catch(err => {
@@ -83,12 +102,13 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
         } else {
             res.status(400).send('User ID not found in session');
         }
-        // Redirect to login page if session is not authenticated
     } else {
         res.redirect('/login');
     }
 });
-//Middleware function to ensure user is authenticated
+
+// Middleware to ensure user is logged in before accessing dashboard
+
 function ensureAuthenticated(req, res, next) {
     if (req.session.loggedIn) {
         return next();
@@ -96,11 +116,24 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
-//get a post
+// Get a post by id
+
 router.get('/:id', async (req, res) => {
     try {
         const blogPostData = await BlogPost.findByPk(req.params.id, {
-            include: [{ model: User, attributes: ['username'] }],
+            include: [
+                {
+                    model: User,
+                    attributes: ['username']
+                },
+                {
+                    model: Comment,
+                    include: {
+                        model: User,
+                        attributes: ['username']
+                    }
+                }
+            ],
         });
 
         if (!blogPostData) {
@@ -114,7 +147,9 @@ router.get('/:id', async (req, res) => {
         res.status(500).json(err);
     }
 });
-//create post
+
+// Create a new post
+
 router.post('/', async (req, res) => {
     try {
         const newPost = await BlogPost.create({
@@ -122,6 +157,7 @@ router.post('/', async (req, res) => {
             user_id: req.session.userId
         });
         console.log("req.body", req.body);
+        console.log('user id', req.session.userId);
 
         res.status(200).json(newPost);
         console.log("Post created successfully", newPost);
@@ -130,22 +166,53 @@ router.post('/', async (req, res) => {
     }
 });
 
-//comment on post
-router.post('/comment', async (req, res) => {
+// Delete a post by id
+
+router.delete('/:id', async (req, res) => {
     try {
-        const newComment = await Comment.create({
-            ...req.body,
-            user_id: req.session.userId
+        const blogPostData = await BlogPost.destroy({
+            where: {
+                id: req.params.id,
+                user_id: req.session.userId,
+            },
         });
 
-        res.status(200).json(newComment);
+        if (!blogPostData) {
+            res.status(404).json({ message: 'No post found with this id!' });
+            return;
+        }
+
+        res.status(200).json(blogPostData);
     } catch (err) {
-        res.status(400).json(err);
+        console.log('error', err);
+        res.status(500).json(err);
     }
 });
-//update post
 
-//Logout
+// Update a post by id
+
+router.put('/:id', async (req, res) => {
+    try {
+        const blogPostData = await BlogPost.update(req.body, {
+            where: {
+                id: req.params.id,
+                user_id: req.session.userId,
+            },
+        });
+
+        if (!blogPostData) {
+            res.status(404).json({ message: 'No post found with this id!' });
+            return;
+        }
+
+        res.status(200).json(blogPostData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+// Logout route
+
 router.post('/logout', (req, res) => {
     if (req.session.loggedIn) {
         req.session.destroy(() => {
