@@ -65,11 +65,11 @@ router.post('/login', async (req, res) => {
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
     if (req.session.loggedIn) {
         // Retrieve the current user's ID from the session
-        const userId = req.session.userId; // Assuming user ID is stored in the session
+        const userId = req.session.userId;
 
         if (userId) {
-            // Query the database to fetch blog posts created by the current user
-            BlogPost.findAll({ where: { user_id: userId } }) // Use 'user_id' to match the foreign key in the BlogPost model
+            // Find all blog posts by the current user
+            BlogPost.findAll({ where: { user_id: userId } })
                 .then(blogPostData => {
                     // Serialize data
                     const blogPosts = blogPostData.map(blogPost => blogPost.get({ plain: true }));
@@ -83,8 +83,9 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
         } else {
             res.status(400).send('User ID not found in session');
         }
+        // Redirect to login page if session is not authenticated
     } else {
-        res.redirect('/login'); // Redirect to login page if session is not authenticated
+        res.redirect('/login');
     }
 });
 //Middleware function to ensure user is authenticated
@@ -95,7 +96,7 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
-//get one post
+//get a post
 router.get('/:id', async (req, res) => {
     try {
         const blogPostData = await BlogPost.findByPk(req.params.id, {
@@ -143,7 +144,6 @@ router.post('/comment', async (req, res) => {
     }
 });
 //update post
-// router.put('/:id', async (req, res))
 
 //Logout
 router.post('/logout', (req, res) => {
