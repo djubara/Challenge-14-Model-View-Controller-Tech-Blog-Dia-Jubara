@@ -1,0 +1,27 @@
+{{!-- TODO Use form instead of divs --}}
+
+{{>nav}}
+<div class="container-fluid d-flex justify-content-center">
+  <h1 class="d-inline p-2 m-2 text-bg text-white">Sign Up</h1>
+</div>
+<div class="container d-flex justify-content-center">
+  <form class="form signup-form">
+    <div class="mb-3">
+      <label for="username" class="form-label mt-3 px-3 text-white">Username:</label>
+      <input type="username" class="form-control px-2 mx-2" id="username" aria-describedby="emailHelp"
+        autocomplete="off">
+    </div>
+    <div class="mb-3">
+      <label for="signUpEmail" class="form-label mt-3 px-3 text-white">Email address:</label>
+      <input type="email" class="form-control px-2 mx-2" id="signUpEmail" aria-describedby="emailHelp"
+        autocomplete="off">
+      <div id="emailHelp" class="form-text m-2 text-white">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-3">
+      <label for="signUpPassword" class="form-label px-3 text-white">Password:</label>
+      <input type="password" class="form-control px-2 mx-2" id="signUpPassword" autocomplete="off">
+    </div>
+    <button type="button" class="btn btn-outline-success p-2 m-2 text-white" id="submitBtn">Submit</button>
+  </form>
+</div>
+<script src="./js/signup.js"></script>

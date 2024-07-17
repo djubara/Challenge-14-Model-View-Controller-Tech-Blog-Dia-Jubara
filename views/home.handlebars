@@ -1,0 +1,8 @@
+{{> nav}}
+{{#if loggedIn}}
+{{> blog-post}}
+{{else}}
+<div class="container d-flex justify-content-center">
+<h1 class="text-center">Please log in to view blog posts</h1>
+</div>
+{{/if}}

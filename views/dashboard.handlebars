@@ -1,0 +1,38 @@
+{{> nav}}
+{{#each blogPosts as |blogPost|}}
+<div class="container mt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card text-center">
+        <div class="card-body bg-dark-subtle">
+          <h5 class="card-title" id="title">{{title}}</h5>
+          <p class="card-text" id="content">{{content}}</p>
+          <a href="/api/users/{{id}}" class="btn btn-outline-success p-2 m-2 text-dark" id="editBtn">Update</a>
+          <h5 class="card-text" id="comHeader">Comments:</h5>
+          
+            {{#each comments as |comment|}}
+            <div>
+              <p>
+              {{comment.content}} by <i>{{user.username}}</i> on <i>{{format_date comment.createdAt}}</i>
+              </p>
+              </div>
+              
+            
+            {{/each}}
+          
+        </div>
+        <div class="card-footer text-body-secondary">
+          Created: {{format_date createdAt}}
+        </div>
+        <div class="card-footer text-body-secondary">
+          <button class="btn btn-outline-danger p-2 m-2 text-dark" id="deleteBtn" data-id="{{id}}">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{/each}}
+{{>form}}
+{{>edit}}
+
+
+<script src="./js/edit-blog.js"></script>

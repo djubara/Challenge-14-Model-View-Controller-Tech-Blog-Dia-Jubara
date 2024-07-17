@@ -1,0 +1,30 @@
+{{#each blogPosts as |blogPost|}}
+<div class="container mt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card text-center">
+        <div class="card-header bg-success text-light">
+          Author: {{user.username}}
+        </div>
+        <div class="card-body bg-dark-subtle">
+          <h3 class="card-title" id="title">{{title}}</h5>
+          <p class="card-text" id="content">{{content}}</p>
+          <h5 class="card-text" id="comHeader">Comments:</h5>
+          <ul>
+            {{#each comments as |comment|}}
+            <li>{{comment.content}} by <i>{{user.username}}</i> on <i>{{format_date comment.createdAt}}</i></li>
+            {{/each}}
+          </ul>
+          {{#if user.id}}
+          <a href="/api/users/{{id}}" class="btn btn-outline-success p-2 m-2 text-dark">Update</a>
+          {{/if}}
+        </div>
+        <div class="card-footer text-body-secondary">
+          Created: {{format_date createdAt}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{> comment id=blogPost.id}}
+{{/each}}

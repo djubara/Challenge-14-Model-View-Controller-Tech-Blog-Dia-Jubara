@@ -1,9 +1,11 @@
+/* TODO change theme*/
+
 body {
-    background-color: rgba(211, 216, 211, 0.753)
+    background-color: rgba(7, 80, 7, 0.438)
 }
 
 .navbar {
-    background-color: rgb(77, 90, 20) !important;
+    background-color: rgb(25, 53, 29) !important;
 }
 
 .navbar a {
