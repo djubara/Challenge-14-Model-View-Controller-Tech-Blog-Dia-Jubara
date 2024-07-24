@@ -27,10 +27,6 @@ handlebars.registerHelper('format_date', (date) => {
 
 const app = express();
 
-
-
-
-
 const sess = {
     secret: 'Super secret secret',
     resave: false,

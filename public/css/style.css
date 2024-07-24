@@ -1,11 +1,11 @@
-/* TODO change theme*/
-
 body {
     background-color: rgba(95, 39, 39, 0.438)
 }
 
-.navbar {
+.navbar,
+.hbar {
     background-color: rgb(12, 13, 70) !important;
+    color: white !important
 }
 
 .navbar a {
